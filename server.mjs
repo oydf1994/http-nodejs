@@ -1,5 +1,6 @@
-import { createServer } from 'http';
 import { ChatGPTAPI } from "chatgpt"
+import Koa from "koa"
+const app = new Koa();
 const api = new ChatGPTAPI({
   apiKey: "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",
   userLabel: " ",
@@ -11,12 +12,12 @@ const api = new ChatGPTAPI({
     presence_penalty: 0,
   },
 })
-createServer(async (req, res) => {
-  const r = await api.sendMessage(res.text, {
+app.use(async (ctx, next) => {
+  const r = await api.sendMessage("hello", {
     promptPrefix: " ",
     promptSuffix: ".",
     timeoutMs: 10 * 60 * 1000,
   })
-  res.json(r)
-  res.end();
-}).listen(process.env.PORT);
+  ctx.body = r
+})
+app.listen(process.env.PORT || 3000)
