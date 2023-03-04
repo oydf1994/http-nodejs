@@ -1,10 +1,37 @@
 const router = require('koa-router')()
 const os = require('os');
+const { PassThrough } = require("stream");
+
 router.get('/', async (ctx, next) => {
-  ctx.body = process.env.apikey
+  ctx.request.socket.setTimeout(0);
+  ctx.req.socket.setNoDelay(true);
+  ctx.req.socket.setKeepAlive(true);
+  ctx.set({
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+  });
+  const stream = new PassThrough();
+  ctx.status = 200;
+  ctx.body = stream;
+  setInterval(() => {
+    stream.write(`data: ${new Date()}\n\n`);
+  }, 1000);
+
 })
 
 router.get('/query', async (ctx, next) => {
+  ctx.request.socket.setTimeout(0);
+  ctx.req.socket.setNoDelay(true);
+  ctx.req.socket.setKeepAlive(true);
+  ctx.set({
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+  });
+  const stream = new PassThrough();
+  ctx.status = 200;
+  ctx.body = stream;
   const { ChatGPTAPI } = await import('chatgpt')
   const api = new ChatGPTAPI({
     apiKey: process.env.apikey,
@@ -22,9 +49,10 @@ router.get('/query', async (ctx, next) => {
     promptSuffix: ".",
     timeoutMs: 10 * 60 * 1000,
     onProgress: (partialResponse) => {
+      stream.write(partialResponse.text);
     }
   })
-  ctx.body = r
+  stream.end()
 })
 
 router.get('/json', async (ctx, next) => {
