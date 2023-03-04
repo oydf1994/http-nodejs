@@ -3,7 +3,7 @@ const router = require('koa-router')()
 router.get('/', async (ctx, next) => {
   const { ChatGPTAPI } = await import('chatgpt')
   const api = new ChatGPTAPI({
-    apiKey: "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",
+    apiKey: "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",
     userLabel: " ",
     completionParams: {
       temperature: 0.7,
