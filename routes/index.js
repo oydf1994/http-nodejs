@@ -1,37 +1,22 @@
 const router = require('koa-router')()
 const os = require('os');
-const { PassThrough } = require("stream");
 
 router.get('/', async (ctx, next) => {
-  ctx.request.socket.setTimeout(0);
-  ctx.req.socket.setNoDelay(true);
-  ctx.req.socket.setKeepAlive(true);
-  ctx.set({
-    "Content-Type": "text/event-stream",
-    "Cache-Control": "no-cache",
-    "Connection": "keep-alive",
-  });
-  const stream = new PassThrough();
-  ctx.status = 200;
-  ctx.body = stream;
-  setInterval(() => {
-    stream.write(`data: ${new Date()}\n\n`);
+  let index = 3
+  let timer = setInterval(() => {
+    ctx.sse.send("a notice");
+    index--
+    if (index == 0) {
+      ctx.sse.sendEnd();
+      clearInterval(timer);
+    }
   }, 1000);
 
 })
 
 router.get('/query', async (ctx, next) => {
-  ctx.request.socket.setTimeout(0);
-  ctx.req.socket.setNoDelay(true);
-  ctx.req.socket.setKeepAlive(true);
-  ctx.set({
-    "Content-Type": "text/event-stream",
-    "Cache-Control": "no-cache",
-    "Connection": "keep-alive",
-  });
-  const stream = new PassThrough();
-  ctx.status = 200;
-  ctx.body = stream;
+  const query = ctx.query;
+  console.log(query.text)
   const { ChatGPTAPI } = await import('chatgpt')
   const api = new ChatGPTAPI({
     apiKey: process.env.apikey,
@@ -44,15 +29,15 @@ router.get('/query', async (ctx, next) => {
       presence_penalty: 0,
     },
   })
-  const r = await api.sendMessage("你在干什么?", {
+  await api.sendMessage(query.text, {
     promptPrefix: " ",
     promptSuffix: ".",
     timeoutMs: 10 * 60 * 1000,
     onProgress: (partialResponse) => {
-      stream.write(partialResponse.text);
+      ctx.sse.send(partialResponse.text);
     }
   })
-  stream.end()
+  ctx.sse.sendEnd();
 })
 
 router.get('/json', async (ctx, next) => {

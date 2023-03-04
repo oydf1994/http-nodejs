@@ -5,17 +5,22 @@ const json = require('koa-json')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
-
+const compress = require('koa-compress');
+const sse = require('koa-sse-stream');
 const index = require('./routes/index')
 const users = require('./routes/users')
-
+app.use(compress())
 // error handler
 onerror(app)
 
 // middlewares
 app.use(bodyparser({
-  enableTypes:['json', 'form', 'text']
+  enableTypes: ['json', 'form', 'text']
 }))
+app.use(sse({
+  maxClients: 5000,
+  pingInterval: 30000
+}));
 app.use(json())
 app.use(logger())
 app.use(require('koa-static')(__dirname + '/public'))
