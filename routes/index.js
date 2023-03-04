@@ -7,7 +7,7 @@ router.get('/', async (ctx, next) => {
 router.get('/query', async (ctx, next) => {
   const { ChatGPTAPI } = await import('chatgpt')
   const api = new ChatGPTAPI({
-    apiKey: "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",
+    apiKey: process.env.apikey,
     userLabel: " ",
     completionParams: {
       temperature: 0.7,
