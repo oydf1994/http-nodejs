@@ -7,4 +7,4 @@ RUN npm install
 
 EXPOSE 3000
 
-CMD npm pm2
+CMD npm run pm2
