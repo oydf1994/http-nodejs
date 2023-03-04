@@ -6,5 +6,8 @@
   "license": "MIT",
   "scripts": {
     "start": "node server.mjs"
+  },
+  "dependencies": {
+    "chatgpt": "^5.0.6"
   }
 }
