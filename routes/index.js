@@ -1,5 +1,5 @@
 const router = require('koa-router')()
-
+const os = require('os');
 router.get('/', async (ctx, next) => {
   ctx.body = process.env.apikey
 })
@@ -29,7 +29,8 @@ router.get('/query', async (ctx, next) => {
 
 router.get('/json', async (ctx, next) => {
   ctx.body = {
-    title: 'koa2 json'
+    freemem: '你的剩余内存:' + os.freemem() / 1024 / 1024,
+    cpus: os.cpus(),
   }
 })
 
