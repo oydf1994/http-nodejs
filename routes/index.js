@@ -15,6 +15,11 @@ router.get('/', async (ctx, next) => {
 })
 
 router.get('/query', async (ctx, next) => {
+  ctx.set({
+    "Content-Type": "text/event-stream; charset=utf-8",
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+  });
   const query = ctx.query;
   console.log(query.text)
   const { ChatGPTAPI } = await import('chatgpt')
