@@ -1,5 +1,6 @@
 import { ChatGPTAPI } from "chatgpt"
 import Koa from "koa"
+import "isomorphic-fetch"
 const app = new Koa();
 const api = new ChatGPTAPI({
   apiKey: "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",
