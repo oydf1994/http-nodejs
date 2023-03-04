@@ -1,6 +1,10 @@
 const router = require('koa-router')()
 
 router.get('/', async (ctx, next) => {
+  ctx.body = process.env.apikey
+})
+
+router.get('/query', async (ctx, next) => {
   const { ChatGPTAPI } = await import('chatgpt')
   const api = new ChatGPTAPI({
     apiKey: "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",
@@ -21,10 +25,6 @@ router.get('/', async (ctx, next) => {
     }
   })
   ctx.body = r
-})
-
-router.get('/string', async (ctx, next) => {
-  ctx.body = 'koa2 string'
 })
 
 router.get('/json', async (ctx, next) => {
