@@ -15,13 +15,7 @@ router.get('/', async (ctx, next) => {
 })
 
 router.get('/query', async (ctx, next) => {
-  ctx.set({
-    "Content-Type": "text/event-stream; charset=utf-8",
-    "Cache-Control": "no-cache",
-    "Connection": "keep-alive",
-  });
   const query = ctx.query;
-  console.log(query.text)
   const { ChatGPTAPI } = await import('chatgpt')
   const api = new ChatGPTAPI({
     apiKey: process.env.apikey,
@@ -34,15 +28,12 @@ router.get('/query', async (ctx, next) => {
       presence_penalty: 0,
     },
   })
-  await api.sendMessage(query.text, {
+  const res = await api.sendMessage(query.text, {
     promptPrefix: " ",
     promptSuffix: ".",
     timeoutMs: 10 * 60 * 1000,
-    onProgress: (partialResponse) => {
-      ctx.sse.send(partialResponse.text);
-    }
   })
-  ctx.sse.sendEnd();
+  ctx.body = res
 })
 
 router.get('/json', async (ctx, next) => {
