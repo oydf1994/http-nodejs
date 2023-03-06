@@ -35,6 +35,7 @@ router.get('/query', async (ctx, next) => {
   }
   if (query.parentMessageId) {
     option.parentMessageId = query.parentMessageId
+    console.log(option.parentMessageId)
   }
   const res = await api.sendMessage(query.text, option)
   ctx.body = res
