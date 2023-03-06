@@ -28,11 +28,15 @@ router.get('/query', async (ctx, next) => {
       presence_penalty: 0,
     },
   })
-  const res = await api.sendMessage(query.text, {
+  let option = {
     promptPrefix: " ",
     promptSuffix: ".",
     timeoutMs: 10 * 60 * 1000,
-  })
+  }
+  if (query.parentMessageId) {
+    option.parentMessageId = query.parentMessageId
+  }
+  const res = await api.sendMessage(query.text, option)
   ctx.body = res
 })
 
