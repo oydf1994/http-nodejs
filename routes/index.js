@@ -2,27 +2,18 @@ const router = require('koa-router')()
 const os = require('os');
 
 router.get('/', async (ctx, next) => {
-  let index = 3
-  let timer = setInterval(() => {
-    ctx.sse.send("a notice");
-    index--
-    if (index == 0) {
-      ctx.sse.sendEnd();
-      clearInterval(timer);
-    }
-  }, 1000);
-
+  ctx.body = 1
 })
 
-router.get('/query', async (ctx, next) => {
-  const query = ctx.query;
+router.post('/query', async (ctx, next) => {
+  const query = ctx.request.body;
+  const apiKey = ctx.headers["apikey"]
   const { ChatGPTAPI } = await import('chatgpt')
   const api = new ChatGPTAPI({
-    apiKey: process.env.apikey,
+    apiKey: apiKey,
     userLabel: " ",
     completionParams: {
       temperature: 0.7,
-      // max_tokens: 4096,
       top_p: 1,
       frequency_penalty: 0,
       presence_penalty: 0,
@@ -32,10 +23,6 @@ router.get('/query', async (ctx, next) => {
     promptPrefix: " ",
     promptSuffix: ".",
     timeoutMs: 10 * 60 * 1000,
-  }
-  if (query.parentMessageId) {
-    option.parentMessageId = query.parentMessageId
-    console.log(option.parentMessageId)
   }
   const res = await api.sendMessage(query.text, option)
   ctx.body = res
